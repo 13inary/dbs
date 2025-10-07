@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	defaultDbPath = "./data.db"
+	defaultDbPath = "./sqlite.db"
 )
 
 // NewSqliteDb 初始化数据库
