@@ -1,4 +1,4 @@
-module github.com/13inary/util
+module github.com/13inary/dbs
 
 go 1.23.4
 
