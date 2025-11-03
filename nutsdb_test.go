@@ -103,6 +103,36 @@ func BenchmarkWriteReadNutsdb(b *testing.B) {
 	wg.Wait()
 }
 
+func TestWriteNutsdbCold(t *testing.T) {
+	dbInfo, err := NewNutsdb("", 0, false)
+	if err != nil {
+		panic(err)
+	}
+	defer dbInfo.Db.Close()
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go writeNutsdb(&wg, dbInfo, 0)
+	wg.Wait()
+
+	err = dbInfo.Db.View(func(fileTx *nutsdb.Tx) error {
+		return fileTx.IterateBuckets(nutsdb.DataStructureBTree, "*", func(bucket string) bool {
+			fmt.Println("file db bucket:", bucket)
+			keys, values, err := fileTx.GetAll(bucket)
+			if err != nil {
+				return false
+			}
+			for i := range keys {
+				fmt.Println("file db begin:", bucket, string(keys[i]), string(values[i]))
+			}
+			return true
+		})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func BenchmarkWriteNutsdbCold(b *testing.B) {
 	dbInfo, err := NewNutsdb("", 0, false)
 	if err != nil {
