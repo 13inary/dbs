@@ -117,13 +117,13 @@ func TestWriteNutsdbCold(t *testing.T) {
 
 	err = dbInfo.Db.View(func(fileTx *nutsdb.Tx) error {
 		return fileTx.IterateBuckets(nutsdb.DataStructureBTree, "*", func(bucket string) bool {
-			fmt.Println("file db bucket:", bucket)
+			fmt.Println("nutsdb bucket:", bucket)
 			keys, values, err := fileTx.GetAll(bucket)
 			if err != nil {
 				return false
 			}
 			for i := range keys {
-				fmt.Println("file db begin:", bucket, string(keys[i]), string(values[i]))
+				fmt.Println("data:", bucket, string(keys[i]), string(values[i]))
 			}
 			return true
 		})
