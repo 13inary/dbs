@@ -77,3 +77,20 @@ func BuntdbKeyExists(db *buntdb.DB, key string) (bool, error) {
 		return nil
 	})
 }
+
+func BuntdbKeysAllExists(db *buntdb.DB, keys []string) (bool, error) {
+	var exists bool
+	return exists, db.View(func(tx *buntdb.Tx) error {
+		for _, key := range keys {
+			_, err := tx.Get(key) // 没有专用的tx.Exists(key)，因此只能用这个
+			if err != nil {
+				if err == buntdb.ErrNotFound {
+					return nil
+				}
+				return err
+			}
+		}
+		exists = true
+		return nil
+	})
+}
