@@ -178,3 +178,28 @@ func BenchmarkWriteReadBuntdbMem(b *testing.B) {
 		panic(err)
 	}
 }
+
+func TestBuntdbKeyExists(t *testing.T) {
+	db, err := NewBuntdb("", true)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	exists, err := BuntdbKeyExists(db, "key0")
+	if err != nil {
+		panic(err)
+	}
+	t.Log("exists:", exists)
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go writeBuntdb(&wg, db, 0)
+	wg.Wait()
+
+	exists, err = BuntdbKeyExists(db, "key0")
+	if err != nil {
+		panic(err)
+	}
+	t.Log("exists:", exists)
+}

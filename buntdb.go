@@ -62,3 +62,18 @@ func NewBuntdb(dbName string, faster bool) (*buntdb.DB, error) {
 
 	return db, nil
 }
+
+func BuntdbKeyExists(db *buntdb.DB, key string) (bool, error) {
+	var exists bool
+	return exists, db.View(func(tx *buntdb.Tx) error {
+		_, err := tx.Get(key) // 没有专用的tx.Exists(key)，因此只能用这个
+		if err != nil {
+			if err == buntdb.ErrNotFound {
+				return nil
+			}
+			return err
+		}
+		exists = true
+		return nil
+	})
+}
